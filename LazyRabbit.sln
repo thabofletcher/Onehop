@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LazyRabbit", "LazyRabbit\LazyRabbit.csproj", "{B551D0B3-60BC-4C61-AC23-BCD6F25F6174}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{6CEF55B0-01D1-4BA8-AD38-E8B96F6F72B9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6CEF55B0-01D1-4BA8-AD38-E8B96F6F72B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CEF55B0-01D1-4BA8-AD38-E8B96F6F72B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CEF55B0-01D1-4BA8-AD38-E8B96F6F72B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CEF55B0-01D1-4BA8-AD38-E8B96F6F72B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B551D0B3-60BC-4C61-AC23-BCD6F25F6174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B551D0B3-60BC-4C61-AC23-BCD6F25F6174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B551D0B3-60BC-4C61-AC23-BCD6F25F6174}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B551D0B3-60BC-4C61-AC23-BCD6F25F6174}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

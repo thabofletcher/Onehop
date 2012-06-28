@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B551D0B3-60BC-4C61-AC23-BCD6F25F6174}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LazyRabbit</RootNamespace>
+    <AssemblyName>LazyRabbit</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bdev.Net.Dns\ANameRecord.cs" />
+    <Compile Include="Bdev.Net.Dns\Enums.cs" />
+    <Compile Include="Bdev.Net.Dns\InvalidResponseException.cs" />
+    <Compile Include="Bdev.Net.Dns\MXRecord.cs" />
+    <Compile Include="Bdev.Net.Dns\NoResponseException.cs" />
+    <Compile Include="Bdev.Net.Dns\NSRecord.cs" />
+    <Compile Include="Bdev.Net.Dns\Pointer.cs" />
+    <Compile Include="Bdev.Net.Dns\Question.cs" />
+    <Compile Include="Bdev.Net.Dns\RecordBase.cs" />
+    <Compile Include="Bdev.Net.Dns\Request.cs" />
+    <Compile Include="Bdev.Net.Dns\Resolver.cs" />
+    <Compile Include="Bdev.Net.Dns\ResourceRecord.cs" />
+    <Compile Include="Bdev.Net.Dns\Response.cs" />
+    <Compile Include="Bdev.Net.Dns\SoaRecord.cs" />
+    <Compile Include="OnehopMail.cs" />
+    <Compile Include="MessageHostSender.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
