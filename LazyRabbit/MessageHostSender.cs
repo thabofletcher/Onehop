@@ -15,13 +15,13 @@ namespace LazyRabbit
         private int _IPIndex;
         SmtpClient _Client;
 
-        public MessageHostSender(MailMessage message, string host)
+        public MessageHostSender(MailMessage message, string host, IPAddress dnsServer)
         {
             _Message = message;
 
             var endPointIPs = new SortedSet<string>();
             // thank you bdev for sorting by pref already
-            var mxs = Bdev.Net.Dns.Resolver.MXLookup(host, IPAddress.Parse("8.8.8.8"));
+            var mxs = Bdev.Net.Dns.Resolver.MXLookup(host, dnsServer);
             foreach (var mx in mxs)
             {
                 var ips = System.Net.Dns.GetHostAddresses(mx.DomainName);
