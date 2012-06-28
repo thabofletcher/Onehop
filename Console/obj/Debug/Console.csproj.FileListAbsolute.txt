@@ -1,8 +1,0 @@
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\Console\bin\Debug\Console.exe.config
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\Console\bin\Debug\Console.exe
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\Console\bin\Debug\Console.pdb
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\Console\bin\Debug\LazyRabbit.dll
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\Console\bin\Debug\LazyRabbit.pdb
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\Console\obj\Debug\Console.csprojResolveAssemblyReference.cache
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\Console\obj\Debug\Console.exe
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\Console\obj\Debug\Console.pdb

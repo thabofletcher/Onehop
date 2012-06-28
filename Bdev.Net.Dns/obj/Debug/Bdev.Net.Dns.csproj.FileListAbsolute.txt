@@ -1,5 +1,0 @@
-C:\Users\Thabo\Documents\Visual Studio 2012\Projects\LazyRabbit\Bdev.Net.Dns\bin\Debug\Bdev.Net.Dns.dll
-C:\Users\Thabo\Documents\Visual Studio 2012\Projects\LazyRabbit\Bdev.Net.Dns\bin\Debug\Bdev.Net.Dns.pdb
-C:\Users\Thabo\Documents\Visual Studio 2012\Projects\LazyRabbit\Bdev.Net.Dns\obj\Debug\Bdev.Net.Dns.csprojResolveAssemblyReference.cache
-C:\Users\Thabo\Documents\Visual Studio 2012\Projects\LazyRabbit\Bdev.Net.Dns\obj\Debug\Bdev.Net.Dns.dll
-C:\Users\Thabo\Documents\Visual Studio 2012\Projects\LazyRabbit\Bdev.Net.Dns\obj\Debug\Bdev.Net.Dns.pdb

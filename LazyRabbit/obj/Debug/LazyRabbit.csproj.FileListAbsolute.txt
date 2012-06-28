@@ -1,5 +1,0 @@
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\LazyRabbit\bin\Debug\LazyRabbit.dll
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\LazyRabbit\bin\Debug\LazyRabbit.pdb
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\LazyRabbit\obj\Debug\LazyRabbit.dll
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\LazyRabbit\obj\Debug\LazyRabbit.pdb
-c:\users\thabo\documents\visual studio 2012\Projects\LazyRabbit\LazyRabbit\obj\Debug\LazyRabbit.csprojResolveAssemblyReference.cache
