@@ -5,7 +5,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Console
+namespace TestConsole
 {
     class Program
     {
@@ -14,14 +14,16 @@ namespace Console
 
             var msg = new MailMessage
             {
-                From = new MailAddress("me@me.com"),
+                From = new MailAddress("me@" + Environment.MachineName),
                 Subject = "test",
                 Body = "test",
             };
 
-            msg.To.Add(msg.From);
+            msg.To.Add(new MailAddress("me@me.com"));
 
             LazyRabbit.OnehopMail.Send(msg);
+
+            Console.Read();
         }
     }
 }

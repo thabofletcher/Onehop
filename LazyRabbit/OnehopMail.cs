@@ -9,7 +9,7 @@ namespace LazyRabbit
 {
     public class OnehopMail
     {
-        static HashSet<MessageHostSender> _Pool = new HashSet<MessageHostSender>();
+        //static HashSet<MessageHostSender> _Pool = new HashSet<MessageHostSender>();
 
         public static void Send(MailMessage message)
         {
@@ -20,7 +20,7 @@ namespace LazyRabbit
             }
 
             foreach (var host in hosts)
-                _Pool.Add(new MessageHostSender(message, host));
+                new MessageHostSender(message, host);
         }
     }
 }

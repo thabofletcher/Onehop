@@ -10,9 +10,6 @@ namespace LazyRabbit
 {
     public class MessageHostSender
     {
-        private static Queue<MessageHostSender> _Q = new Queue<MessageHostSender>();
-        private static object _L = new object();
-
         private MailMessage _Message;
         private List<string> _EndPointIPs;
         private int _IPIndex;
@@ -37,56 +34,47 @@ namespace LazyRabbit
 
             _EndPointIPs = new List<string>();
             _EndPointIPs.AddRange(endPointIPs);
+            _IPIndex = 0;
 
-            lock (_L)
-                _Q.Enqueue(this);
-
-            SendMsg();
+            SendAsync();
         }
 
 
         private void Send()
         {
-            var ep = _EndPointIPs[_IPIndex];
-            _Client = new SmtpClient(ep);
-
-            _Client.SendCompleted += _SendCompleted;
-
-            _Client.Send(_Message);
-
-            //_Client.SendCompleted += _SendCompleted;
-            //_Client.SendAsync(_Message, this);
-
-            //_Client.SendMailAsync(_Message).ContinueWith(task => {
-            //    var t = task.IsFaulted;
-            //    });
-        }
-
-        private static void SendMsg()
-        {
-            MessageHostSender msg;
-            lock (_L)
-                msg = _Q.Dequeue();
-
-            msg.Send();
-        }
-
-        private static void _SendCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            try
+            foreach (var ip in _EndPointIPs)
             {
-                if (e.Error != null)
+                try
                 {
-                    //_IPIndex++;
-                    //if (_IPIndex < _EndPointIPs.Count)
-                    //    Send();
-                    //else
-                        throw new Exception("Message failed to send after attempting all mail exchanges.", e.Error);
+                    _Client = new SmtpClient(ip);
+                    _Client.Send(_Message);
+                    return;
                 }
+                catch { }
             }
-            finally
+
+            throw new Exception("Message failed to send after attempting all mail exchanges.");
+        }
+
+        private void SendAsync()
+        {
+            if (_IPIndex < _EndPointIPs.Count)
             {
-                SendMsg();
+                _Client = new SmtpClient(_EndPointIPs[_IPIndex]);
+                _Client.SendCompleted += new SendCompletedEventHandler(_SendCompleted);
+                _Client.SendAsync(_Message, this);
+            }
+        }
+
+        private void _SendCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                _IPIndex++;
+                if (_IPIndex < _EndPointIPs.Count)
+                    SendAsync();
+                else
+                    throw new Exception("Message failed to send after attempting all mail exchanges.", e.Error);
             }
         }
     }
