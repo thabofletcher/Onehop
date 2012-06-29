@@ -12,7 +12,7 @@ namespace LazyRabbit
     {
         //static HashSet<MessageHostSender> _Pool = new HashSet<MessageHostSender>();
 
-        public void Send(MailMessage message)
+        public void Send(MailMessage message, Action<Exception> callbackException = null)
         {
             var dnsServer = DefaultDns.Current;
             if (dnsServer == null)
@@ -27,7 +27,7 @@ namespace LazyRabbit
             }
 
             foreach (var host in hosts)
-                new MessageHostSender(message, host, dnsServer);
+                new MessageHostSender(message, host, dnsServer, callbackException);
         }
     }
 }

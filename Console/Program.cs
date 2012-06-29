@@ -19,11 +19,10 @@ namespace TestConsole
                 Body = "test",
             };
 
-            msg.To.Add(new MailAddress("you@you.com"));
+            msg.To.Add(new MailAddress("you@gmail.com"));
 
-            // variable needs to prevent garbage collection for its async work
             var ka = new LazyRabbit.OnehopMail();
-            ka.Send(msg);
+            ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); });
 
             Console.Read();
         }

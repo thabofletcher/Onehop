@@ -14,8 +14,9 @@ namespace LazyRabbit
         private List<string> _EndPointIPs;
         private int _IPIndex;
         SmtpClient _Client;
+        Action<Exception> _ExceptionLogger;
 
-        public MessageHostSender(MailMessage message, string host, IPAddress dnsServer)
+        public MessageHostSender(MailMessage message, string host, IPAddress dnsServer, Action<Exception> callbackException)
         {
             _Message = message;
 
@@ -35,6 +36,7 @@ namespace LazyRabbit
             _EndPointIPs = new List<string>();
             _EndPointIPs.AddRange(endPointIPs);
             _IPIndex = 0;
+            _ExceptionLogger = callbackException;
 
             SendAsync();
         }
@@ -74,7 +76,8 @@ namespace LazyRabbit
                 if (_IPIndex < _EndPointIPs.Count)
                     SendAsync();
                 else
-                    throw new Exception("Message failed to send after attempting all mail exchanges.", e.Error);
+                    if (_ExceptionLogger != null)
+                        _ExceptionLogger(new Exception("Message failed to send after attempting all mail exchanges.", e.Error));
             }
         }
     }
