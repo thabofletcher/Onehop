@@ -41,23 +41,6 @@ namespace LazyRabbit
             SendAsync();
         }
 
-
-        private void Send()
-        {
-            foreach (var ip in _EndPointIPs)
-            {
-                try
-                {
-                    _Client = new SmtpClient(ip);
-                    _Client.Send(_Message);
-                    return;
-                }
-                catch { }
-            }
-
-            throw new Exception("Message failed to send after attempting all mail exchanges.");
-        }
-
         private void SendAsync()
         {
             if (_IPIndex < _EndPointIPs.Count)
@@ -70,14 +53,21 @@ namespace LazyRabbit
 
         private void _SendCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            if (e.Error != null)
+            try
             {
-                _IPIndex++;
-                if (_IPIndex < _EndPointIPs.Count)
-                    SendAsync();
-                else
-                    if (_ExceptionLogger != null)
-                        _ExceptionLogger(new Exception("Message failed to send after attempting all mail exchanges.", e.Error));
+                if (e.Error != null)
+                {
+                    _IPIndex++;
+                    if (_IPIndex < _EndPointIPs.Count)
+                        SendAsync();
+                    else
+                        if (_ExceptionLogger != null)
+                            _ExceptionLogger(new Exception("Message failed to send after attempting all mail exchanges.", e.Error));
+                }
+            }
+            catch (Exception exc)
+            {
+                _ExceptionLogger(exc);
             }
         }
     }
