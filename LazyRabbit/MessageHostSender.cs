@@ -30,9 +30,6 @@ namespace LazyRabbit
 
         public void TrySend()
         {
-#warning REMOVE
-            Console.WriteLine("Trying to send message at: " + DateTime.Now.ToString());
-
             var endPointIPs = new SortedSet<string>();
             try
             {

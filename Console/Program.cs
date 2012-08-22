@@ -14,10 +14,14 @@ namespace TestConsole
         static void Main(string[] args)
         {
             //TestDNS();
-            SendTestMail();
+            var msg = TestMail();
+
+            var ka = new OnehopMail();
+            ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); });
 
             Console.Read();
-            
+
+            ka.EndAllRetries();            
         }
 
         private static void TestDNS()
@@ -54,7 +58,7 @@ namespace TestConsole
             }
         }
 
-        private static void SendTestMail()
+        private static MailMessage TestMail()
         {
             var msg = new MailMessage
             {
@@ -65,8 +69,7 @@ namespace TestConsole
 
             msg.To.Add(new MailAddress("youdontexistforsure@gmail.com"));
 
-            var ka = new OnehopMail();
-            ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); });
+            return msg;
         }
     }
 }

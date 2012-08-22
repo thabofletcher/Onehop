@@ -10,7 +10,7 @@ namespace LazyRabbit
 {
     public class OnehopMail
     {
-        //static HashSet<MessageHostSender> _Pool = new HashSet<MessageHostSender>();
+        RetryQueue _RetryQueue = new RetryQueue();
 
         public void Send(MailMessage message, Action<Exception> callbackException = null)
         {
@@ -24,12 +24,15 @@ namespace LazyRabbit
             foreach (var to in message.To)
             {
                 hosts.Add(to.Host);
-            }
-
-            RetryQueue _RetryQueue = new RetryQueue();
+            }            
 
             foreach (var host in hosts)
                 new MessageHostSender(message, host, dnsServer, callbackException, retryQ:_RetryQueue).TrySend();
+        }
+
+        public void EndAllRetries()
+        {
+            _RetryQueue.Stop();
         }
     }
 }

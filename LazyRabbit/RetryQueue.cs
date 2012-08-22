@@ -69,7 +69,6 @@ namespace LazyRabbit
                 }
 
                 Thread.Sleep(1000);
-
             }
         }
       
@@ -121,6 +120,17 @@ namespace LazyRabbit
                 catch { }
             }
 
+        }
+
+        public void Stop()
+        {
+            _Run = false;
+            try
+            {
+                if (_RunThread != null && _RunThread.IsAlive)
+                    _RunThread.Join(5000);
+            }
+            catch { }
         }
 
         #region locking convention
