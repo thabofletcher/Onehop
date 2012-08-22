@@ -5,9 +5,20 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Bdev.Net.Dns;
 
 namespace LazyRabbit
 {
+    public class UnresponsiveDNSServer : Exception
+    {
+        private IPAddress _SuspectDNSServer;
+        public IPAddress SuspectDNSServer { get { return _SuspectDNSServer; } }
+        public UnresponsiveDNSServer(IPAddress suspect)
+        {
+            _SuspectDNSServer = suspect;
+        }
+    }
+
     public class MessageHostSender
     {
         private MailMessage _Message;
@@ -19,7 +30,7 @@ namespace LazyRabbit
         IPAddress _DNSServer;
         RetryQueue _RetryQueue;
 
-        public MessageHostSender(MailMessage message, string host, IPAddress dnsServer, Action<Exception> callbackException, RetryQueue retryQ = null)
+        public MessageHostSender(MailMessage message, string host, IPAddress dnsServer, Action<Exception> callbackException = null, RetryQueue retryQ = null)
         {
             _Message = message;
             _RetryQueue = retryQ;
@@ -30,25 +41,7 @@ namespace LazyRabbit
 
         public void TrySend()
         {
-            var endPointIPs = new SortedSet<string>();
-            try
-            {
-                // thank you bdev for sorting by pref already
-                var mxs = Bdev.Net.Dns.Resolver.MXLookup(_Host, _DNSServer);
-                foreach (var mx in mxs)
-                {
-                    var ips = System.Net.Dns.GetHostAddresses(mx.DomainName);
-
-                    foreach (var ip in ips)
-                    {
-                        endPointIPs.Add(ip.ToString());
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                _ExceptionLogger(exc);
-            }
+            var endPointIPs = GetMXIPs();
 
             _EndPointIPs = new List<string>();
             _EndPointIPs.AddRange(endPointIPs);
@@ -64,6 +57,30 @@ namespace LazyRabbit
                 _IPIndex = 0;
                 SendAsync();
             }
+        }
+
+        private SortedSet<string> GetMXIPs()
+        {
+            var endPointIPs = new SortedSet<string>();
+            try
+            {
+                // thank you bdev for sorting by pref already
+                var mxs = Resolver.MXLookup(_Host, _DNSServer);
+                foreach (var mx in mxs)
+                {
+                    var ips = Dns.GetHostAddresses(mx.DomainName);
+
+                    foreach (var ip in ips)
+                    {
+                        endPointIPs.Add(ip.ToString());
+                    }
+                }
+            }
+            catch (NoResponseException)
+            {
+                throw new UnresponsiveDNSServer(_DNSServer);
+            }
+            return endPointIPs;
         }
 
         private void SendAsync()
@@ -97,8 +114,26 @@ namespace LazyRabbit
             }
             catch (Exception exc)
             {
-                _ExceptionLogger(exc);
+                if (_ExceptionLogger != null)
+                    _ExceptionLogger(exc);
             }
+        }
+
+        public string Host
+        {
+            get
+            {
+                return _Host;
+            }
+        }
+
+        public override string ToString()
+        {
+            return "To: " + _Message.To.ToString() + Environment.NewLine +
+                "Subject: " + _Message.Subject + Environment.NewLine +
+                "Message: " + _Message.Body + Environment.NewLine +
+                "Using DNS Server: " + _DNSServer + Environment.NewLine +
+                "Last Tried MX IPs: " + GetMXIPs().Aggregate((current, next) => current + "," + next) + Environment.NewLine;
         }
     }
 }

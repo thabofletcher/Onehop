@@ -8,13 +8,52 @@ using System.Threading;
 namespace LazyRabbit
 {
     public class SendAttemptsExhaustedException : Exception
-    {
-        public List<DateTime> SendAttempts;
-        public MessageHostSender MessageSender;
-        public SendAttemptsExhaustedException(List<DateTime> sendAttemps, MessageHostSender message)
+    {        
+        protected List<DateTime> _SendAttempts;
+        public List<DateTime> SendAttempts { get { return _SendAttempts; } }
+        protected MessageHostSender _MessageSender;
+        public MessageHostSender MessageSender { get { return _MessageSender; } }
+        public SendAttemptsExhaustedException(List<DateTime> sendAttempts, MessageHostSender message)
         {
-            SendAttempts = sendAttemps;
-            MessageSender = message;
+            _SendAttempts = sendAttempts;
+            _MessageSender = message;
+        }
+
+        public override string ToString()
+        {
+            return _MessageSender + Environment.NewLine + "Send Attempts: " + Environment.NewLine + _SendAttempts.Select(x => x.ToString()).Aggregate((i, j) => i + Environment.NewLine + j);
+        }
+
+        public override string Message
+        {
+            get
+            {
+                return String.Format("An attempt to send mail to {0} has failed for the last time. The system will no longer deliver the message.", _MessageSender.Host);
+            }
+        }
+    }
+
+    public class SendAttemptFailed : SendAttemptsExhaustedException
+    {
+        private DateTime _NextAttempt;
+        public DateTime NextAttempt { get { return _NextAttempt; } }
+        public SendAttemptFailed(List<DateTime> sendAttempts, MessageHostSender message, DateTime nextAttempt) : base(sendAttempts, message)
+        {
+            _NextAttempt = nextAttempt;
+        }
+
+        public override string ToString()
+        {
+            DateTime firstAttempt = _SendAttempts.FirstOrDefault();
+            return _MessageSender + Environment.NewLine + "First Attempt: " + _SendAttempts.FirstOrDefault() + Environment.NewLine + "Last Attempt: " + _SendAttempts.LastOrDefault() + Environment.NewLine + "Total Attempts: " + _SendAttempts.Count;
+        }
+
+        public override string Message
+        {
+            get
+            {
+                return String.Format("An attempt to send mail to {0} has failed. The system will try again at {1}", _MessageSender.Host, _NextAttempt);
+            }
         }
     }
 
@@ -103,9 +142,10 @@ namespace LazyRabbit
 
                 if (retryCount < _RetryAttempts.Count)
                 {
-
-                    _PendingSends.Add(DateTime.Now.Add(_RetryAttempts[retryCount]), messageHostSender);
+                    DateTime retryTime = DateTime.Now.Add(_RetryAttempts[retryCount]);
+                    _PendingSends.Add(retryTime, messageHostSender);
                     CheckRunThread();
+                    throw new SendAttemptFailed(fails, messageHostSender, retryTime);
                 }
                 else
                 {

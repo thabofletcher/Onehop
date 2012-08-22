@@ -13,6 +13,7 @@ namespace TestConsole
     {
         static void Main(string[] args)
         {
+            //TestToString();
             //TestDNS();
             var msg = TestMail();
 
@@ -33,10 +34,10 @@ namespace TestConsole
             }
             else
             {
-                Console.WriteLine("MXs according to your nameserver:");
+                Console.WriteLine("MXs according to your nameserver " + dnsServer.ToString() + " :");
                 try
                 {
-                    PrintMXs("gmail.com", dnsServer);
+                    PrintMXs("gmailzzzzzzzzzzzzzzzzzzzzz.com", dnsServer);
                 }
                 catch (Exception exc)
                 {
@@ -56,6 +57,25 @@ namespace TestConsole
             {
                 Console.WriteLine(mx.DomainName);
             }
+        }
+
+        private static void TestToString()
+        {
+            MailMessage message = TestMail();
+            var dnsServer = DefaultDns.Current;
+            if (dnsServer == null)
+                dnsServer = IPAddress.Parse("8.8.8.8");
+
+            //Console.WriteLine("using dns: " + dnsServer.ToString());
+
+            HashSet<string> hosts = new HashSet<string>();
+            foreach (var to in message.To)
+            {
+                hosts.Add(to.Host);
+            }            
+
+            foreach (var host in hosts)
+                Console.WriteLine(new MessageHostSender(message, host, dnsServer));
         }
 
         private static MailMessage TestMail()
