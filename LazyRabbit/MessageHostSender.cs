@@ -15,30 +15,58 @@ namespace LazyRabbit
         private int _IPIndex;
         SmtpClient _Client;
         Action<Exception> _ExceptionLogger;
+        string _Host;
+        IPAddress _DNSServer;
+        RetryQueue _RetryQueue;
 
-        public MessageHostSender(MailMessage message, string host, IPAddress dnsServer, Action<Exception> callbackException)
+        public MessageHostSender(MailMessage message, string host, IPAddress dnsServer, Action<Exception> callbackException, RetryQueue retryQ = null)
         {
             _Message = message;
+            _RetryQueue = retryQ;
+            _ExceptionLogger = callbackException;
+            _Host = host;
+            _DNSServer = dnsServer;
+        }
+
+        public void TrySend()
+        {
+#warning REMOVE
+            Console.WriteLine("Trying to send message at: " + DateTime.Now.ToString());
 
             var endPointIPs = new SortedSet<string>();
-            // thank you bdev for sorting by pref already
-            var mxs = Bdev.Net.Dns.Resolver.MXLookup(host, dnsServer);
-            foreach (var mx in mxs)
+            try
             {
-                var ips = System.Net.Dns.GetHostAddresses(mx.DomainName);
-
-                foreach (var ip in ips)
+                // thank you bdev for sorting by pref already
+                var mxs = Bdev.Net.Dns.Resolver.MXLookup(_Host, _DNSServer);
+                foreach (var mx in mxs)
                 {
-                    endPointIPs.Add(ip.ToString());
+                    var ips = System.Net.Dns.GetHostAddresses(mx.DomainName);
+
+                    foreach (var ip in ips)
+                    {
+                        endPointIPs.Add(ip.ToString());
+                    }
                 }
+            }
+            catch (Exception exc)
+            {
+                _ExceptionLogger(exc);
             }
 
             _EndPointIPs = new List<string>();
             _EndPointIPs.AddRange(endPointIPs);
-            _IPIndex = 0;
-            _ExceptionLogger = callbackException;
 
-            SendAsync();
+            if (_EndPointIPs.Count == 0)
+            {
+                // if at first you don't succeed...
+                if (_RetryQueue != null)
+                    _RetryQueue.BeginRetry(this);
+            }
+            else
+            {
+                _IPIndex = 0;
+                SendAsync();
+            }
         }
 
         private void SendAsync()
@@ -62,7 +90,12 @@ namespace LazyRabbit
                         SendAsync();
                     else
                         if (_ExceptionLogger != null)
+                        {
                             _ExceptionLogger(new Exception("Message failed to send after attempting all mail exchanges.", e.Error));
+                            // if at first you don't succeed...
+                            if (_RetryQueue != null)
+                                _RetryQueue.BeginRetry(this);
+                        }
                 }
             }
             catch (Exception exc)

@@ -26,8 +26,10 @@ namespace LazyRabbit
                 hosts.Add(to.Host);
             }
 
+            RetryQueue _RetryQueue = new RetryQueue();
+
             foreach (var host in hosts)
-                new MessageHostSender(message, host, dnsServer, callbackException);
+                new MessageHostSender(message, host, dnsServer, callbackException, retryQ:_RetryQueue).TrySend();
         }
     }
 }
