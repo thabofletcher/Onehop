@@ -10,11 +10,11 @@ namespace LazyRabbit
     public class SendAttemptsExhaustedException : Exception
     {
         public List<DateTime> SendAttempts;
-        public MessageHostSender Message;
+        public MessageHostSender MessageSender;
         public SendAttemptsExhaustedException(List<DateTime> sendAttemps, MessageHostSender message)
         {
             SendAttempts = sendAttemps;
-            Message = message;
+            MessageSender = message;
         }
     }
 
