@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Bdev.Net.Dns;
 using LazyRabbit;
 
 namespace TestConsole
@@ -15,15 +16,42 @@ namespace TestConsole
         {
             //TestToString();
             //TestDNS();
-            var msg = TestMail();
-            
+			//TestMailing();
+
+			MXLoadTest();
+
+			Console.Read();
+        }
+
+		private static void MXLoadTest()
+		{
+
+			for (int i = 0; i < 10000; i++)
+			{
+
+				try
+				{
+					Resolver.MXLookup("google.com", DefaultDns.Current);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e.ToString());
+				}
+			}
+
+		}
+
+		private void TestMailing()
+		{
+			var msg = TestMail();
+
 			var ka = new OnehopMail();
 			ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); Console.WriteLine(exc.Message); });
 
-            Console.Read();
+			Console.Read();
 
-            ka.EndAllRetries();            
-        }
+			ka.EndAllRetries();   
+		}
 
         private static void TestDNS()
         {
@@ -52,7 +80,7 @@ namespace TestConsole
 
         private static void PrintMXs(string host, IPAddress dnsServer)
         {
-            var mxs = Bdev.Net.Dns.Resolver.MXLookup(host, dnsServer);
+            var mxs = Resolver.MXLookup(host, dnsServer);
             foreach (var mx in mxs)
             {
                 Console.WriteLine(mx.DomainName);
