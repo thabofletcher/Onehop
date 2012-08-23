@@ -16,9 +16,9 @@ namespace TestConsole
             //TestToString();
             //TestDNS();
             var msg = TestMail();
-
-            var ka = new OnehopMail();
-            ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); });
+            
+			var ka = new OnehopMail();
+			ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); Console.WriteLine(exc.Message); });
 
             Console.Read();
 
@@ -62,12 +62,6 @@ namespace TestConsole
         private static void TestToString()
         {
             MailMessage message = TestMail();
-            var dnsServer = DefaultDns.Current;
-            if (dnsServer == null)
-                dnsServer = IPAddress.Parse("8.8.8.8");
-
-            //Console.WriteLine("using dns: " + dnsServer.ToString());
-
             HashSet<string> hosts = new HashSet<string>();
             foreach (var to in message.To)
             {
@@ -75,7 +69,7 @@ namespace TestConsole
             }            
 
             foreach (var host in hosts)
-                Console.WriteLine(new MessageHostSender(message, host, dnsServer));
+                Console.WriteLine(new MessageHostSender(message, host));
         }
 
         private static MailMessage TestMail()
@@ -87,7 +81,9 @@ namespace TestConsole
                 Body = "test",
             };
 
+			msg.To.Add(new MailAddress("thabo.fletcher@gmail.com"));
             msg.To.Add(new MailAddress("youdontexistforsure@gmail.com"));
+			msg.To.Add(new MailAddress("neitherdoyouyouinsensitivecad@gmail.com"));
 
             return msg;
         }

@@ -55,6 +55,7 @@
     <Compile Include="Bdev.Net.Dns\Response.cs" />
     <Compile Include="Bdev.Net.Dns\SoaRecord.cs" />
     <Compile Include="DefaultDns.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="OnehopMail.cs" />
     <Compile Include="MessageHostSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

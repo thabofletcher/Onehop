@@ -14,12 +14,6 @@ namespace LazyRabbit
 
         public void Send(MailMessage message, Action<Exception> callbackException = null)
         {
-            var dnsServer = DefaultDns.Current;
-            if (dnsServer == null)
-                dnsServer = IPAddress.Parse("8.8.8.8");
-
-            //Console.WriteLine("using dns: " + dnsServer.ToString());
-
             HashSet<string> hosts = new HashSet<string>();
             foreach (var to in message.To)
             {
@@ -27,7 +21,7 @@ namespace LazyRabbit
             }            
 
             foreach (var host in hosts)
-                new MessageHostSender(message, host, dnsServer, callbackException, retryQ:_RetryQueue).TrySend();
+                new MessageHostSender(message, host, callbackException, retryQ:_RetryQueue).TrySend();
         }
 
         public void EndAllRetries()

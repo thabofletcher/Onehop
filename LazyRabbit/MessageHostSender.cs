@@ -9,16 +9,6 @@ using Bdev.Net.Dns;
 
 namespace LazyRabbit
 {
-    public class UnresponsiveDNSServer : Exception
-    {
-        private IPAddress _SuspectDNSServer;
-        public IPAddress SuspectDNSServer { get { return _SuspectDNSServer; } }
-        public UnresponsiveDNSServer(IPAddress suspect)
-        {
-            _SuspectDNSServer = suspect;
-        }
-    }
-
     public class MessageHostSender
     {
         private MailMessage _Message;
@@ -30,58 +20,60 @@ namespace LazyRabbit
         IPAddress _DNSServer;
         RetryQueue _RetryQueue;
 
-        public MessageHostSender(MailMessage message, string host, IPAddress dnsServer, Action<Exception> callbackException = null, RetryQueue retryQ = null)
+        public MessageHostSender(MailMessage message, string host, Action<Exception> callbackException = null, RetryQueue retryQ = null)
         {
             _Message = message;
             _RetryQueue = retryQ;
             _ExceptionLogger = callbackException;
             _Host = host;
-            _DNSServer = dnsServer;
         }
 
-        public void TrySend()
-        {
-            var endPointIPs = GetMXIPs();
+		public void TrySend()
+		{
+			try
+			{
+				_DNSServer = DefaultDns.Current;
+				if (_DNSServer == null)
+					_DNSServer = IPAddress.Parse("8.8.8.8");
 
-            _EndPointIPs = new List<string>();
-            _EndPointIPs.AddRange(endPointIPs);
+				var endPointIPs = new SortedSet<string>();
+				try
+				{
+					// thank you bdev for sorting by pref already
+					var mxs = Resolver.MXLookup(_Host, _DNSServer);
+					foreach (var mx in mxs)
+					{
+						var ips = Dns.GetHostAddresses(mx.DomainName);
 
-            if (_EndPointIPs.Count == 0)
-            {
-                // if at first you don't succeed...
-                if (_RetryQueue != null)
-                    _RetryQueue.BeginRetry(this);
-            }
-            else
-            {
-                _IPIndex = 0;
-                SendAsync();
-            }
-        }
+						foreach (var ip in ips)
+						{
+							endPointIPs.Add(ip.ToString());
+						}
+					}
+				}
+				catch (Exception exc)
+				{
+					FailedSend(String.Format("Mail exchange lookups are failing for the configured DNS server: {0}", _DNSServer.ToString()), exc.ToString());
+					return;
+				}
 
-        private SortedSet<string> GetMXIPs()
-        {
-            var endPointIPs = new SortedSet<string>();
-            try
-            {
-                // thank you bdev for sorting by pref already
-                var mxs = Resolver.MXLookup(_Host, _DNSServer);
-                foreach (var mx in mxs)
-                {
-                    var ips = Dns.GetHostAddresses(mx.DomainName);
+				_EndPointIPs = new List<string>();
+				_EndPointIPs.AddRange(endPointIPs);
 
-                    foreach (var ip in ips)
-                    {
-                        endPointIPs.Add(ip.ToString());
-                    }
-                }
-            }
-            catch (NoResponseException)
-            {
-                throw new UnresponsiveDNSServer(_DNSServer);
-            }
-            return endPointIPs;
-        }
+				if (_EndPointIPs.Count == 0)
+				{
+					FailedSend(String.Format("No mail exchange endpoints were received from the configured DNS server: {0}", _DNSServer.ToString()));
+					return;
+				}
+
+				_IPIndex = 0;
+				SendAsync();
+			}
+			catch (Exception exc)
+			{
+				LogException(exc);
+			}
+		}
 
         private void SendAsync()
         {
@@ -93,29 +85,46 @@ namespace LazyRabbit
             }
         }
 
+		private void FailedSend(string error, string details = "")
+		{
+			// if at first you don't succeed...
+			if (_RetryQueue != null)
+				_RetryQueue.BeginRetry(this, error, details);
+			else
+				LogException(new SendAttemptsExhaustedException(new List<DateTime>() { DateTime.Now }, this, error, details));
+		}
+
+		private void LogException(Exception exc)
+		{
+			if (_ExceptionLogger != null)
+				_ExceptionLogger(exc);
+		}
+
         private void _SendCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             try
             {
                 if (e.Error != null)
                 {
-                    _IPIndex++;
-                    if (_IPIndex < _EndPointIPs.Count)
-                        SendAsync();
-                    else
-                        if (_ExceptionLogger != null)
-                        {
-                            _ExceptionLogger(new Exception("Message failed to send after attempting all mail exchanges.", e.Error));
-                            // if at first you don't succeed...
-                            if (_RetryQueue != null)
-                                _RetryQueue.BeginRetry(this);
-                        }
+					// dont retry if it is a recipient error (that way the valid recipients dont get a billion emails)
+					Type errorType = e.Error.GetType();
+					if (errorType == typeof(SmtpFailedRecipientException))
+						LogException(new FailedRecipientException((e.Error as SmtpFailedRecipientException).FailedRecipient, this));
+					else if (errorType == typeof(SmtpFailedRecipientsException))
+						LogException(new FailedRecipientException((e.Error as SmtpFailedRecipientsException).InnerExceptions.Select(x => x.FailedRecipient).Aggregate((current, next) => current + "," + next), this));
+					else
+					{
+						_IPIndex++;
+						if (_IPIndex < _EndPointIPs.Count)
+							SendAsync();
+						else
+							FailedSend("Message failed to send after attempting all mail exchanges.", e.Error.ToString());
+					}
                 }
             }
             catch (Exception exc)
             {
-                if (_ExceptionLogger != null)
-                    _ExceptionLogger(exc);
+				LogException(exc);
             }
         }
 
@@ -133,7 +142,7 @@ namespace LazyRabbit
                 "Subject: " + _Message.Subject + Environment.NewLine +
                 "Message: " + _Message.Body + Environment.NewLine +
                 "Using DNS Server: " + _DNSServer + Environment.NewLine +
-                "Last Tried MX IPs: " + GetMXIPs().Aggregate((current, next) => current + "," + next) + Environment.NewLine;
+                "Last Tried MX IPs: " + _EndPointIPs.Aggregate((current, next) => current + "," + next) + Environment.NewLine;
         }
     }
 }
