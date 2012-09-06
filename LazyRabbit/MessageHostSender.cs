@@ -136,13 +136,13 @@ namespace LazyRabbit
             }
         }
 
-        public override string ToString()
-        {
-            return "To: " + _Message.To.ToString() + Environment.NewLine +
-                "Subject: " + _Message.Subject + Environment.NewLine +
-                "Message: " + _Message.Body + Environment.NewLine +
-                "Using DNS Server: " + _DNSServer + Environment.NewLine +
-                "Last Tried MX IPs: " + _EndPointIPs.Aggregate((current, next) => current + "," + next) + Environment.NewLine;
-        }
+		public override string ToString()
+		{
+			return "Bcc To: " + _Message.Bcc.ToString() + Environment.NewLine +
+				"Subject: " + _Message.Subject + Environment.NewLine +
+				"Message: " + _Message.Body + Environment.NewLine +
+				"Using DNS Server: " + _DNSServer + Environment.NewLine +
+				"Last Tried MX IPs: " + (_EndPointIPs == null ? "" : _EndPointIPs.Aggregate((current, next) => current + "," + next)) + Environment.NewLine;
+		}
     }
 }

@@ -16,9 +16,9 @@ namespace TestConsole
         {
             //TestToString();
             //TestDNS();
-			//TestMailing();
+			TestMailing();
 
-			MXLoadTest();
+			//MXLoadTest();
 
 			Console.Read();
         }
@@ -41,12 +41,12 @@ namespace TestConsole
 
 		}
 
-		private void TestMailing()
+        private static void TestMailing()
 		{
 			var msg = TestMail();
 
 			var ka = new OnehopMail();
-			ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); Console.WriteLine(exc.Message); });
+			ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); });
 
 			Console.Read();
 
@@ -100,20 +100,23 @@ namespace TestConsole
                 Console.WriteLine(new MessageHostSender(message, host));
         }
 
-        private static MailMessage TestMail()
-        {
-            var msg = new MailMessage
-            {
-                From = new MailAddress("me@" + Environment.MachineName),
-                Subject = "test",
-                Body = "test",
-            };
+		private static MailMessage TestMail()
+		{
+			var msg = new MailMessage
+			{
+				From = new MailAddress("\"Thabo Fletcher \"<thabo@braverobot.net>"),
+				Subject = "Lazy rabbit test",
+				Body = "This is a test of the lazy rabbit notification system.",
+			};
 
-			msg.To.Add(new MailAddress("thabo.fletcher@gmail.com"));
-            msg.To.Add(new MailAddress("youdontexistforsure@gmail.com"));
-			msg.To.Add(new MailAddress("neitherdoyouyouinsensitivecad@gmail.com"));
+			// msg.To.Add(new MailAddress("thabo.fletcher@gmail.com"));
+			// msg.To.Add(new MailAddress("youdontexistforsure@gmail.com"));
+			//msg.To.Add(new MailAddress("neitherdoyouyouinsensitivecad@gmail.com"));
+			//msg.To.Add(new MailAddress("johnstewie@rocketmail.com"));
+			//msg.To.Add(new MailAddress("sakdfjlksajfdlksjadf@rocketmail.com"));
+			msg.To.Add(new MailAddress("thabo@epi.com.mx"));
 
-            return msg;
-        }
+			return msg;
+		}
     }
 }
