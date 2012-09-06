@@ -66,6 +66,9 @@ namespace Bdev.Net.Dns
 		/// <returns>the byte at the pointer</returns>
 		public byte Peek()
 		{
+			if (_position >= _message.Length)
+				return 0;
+
 			return _message[_position];
 		}
 
@@ -75,6 +78,9 @@ namespace Bdev.Net.Dns
 		/// <returns>the byte at the pointer</returns>
 		public byte ReadByte()
 		{
+			if (_position >= _message.Length)
+				return 0;
+
 			return _message[_position++];
 		}
 
