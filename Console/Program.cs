@@ -46,7 +46,7 @@ namespace TestConsole
 			var msg = TestMail();
 
 			var ka = new OnehopMail();
-			ka.Send(msg, exc => { Console.WriteLine(exc.ToString()); });
+			ka.Send(msg, exc => { Console.WriteLine(exc.Message);  Console.WriteLine(exc.ToString()); });
 
 			Console.Read();
 
@@ -104,9 +104,11 @@ namespace TestConsole
 		{
 			var msg = new MailMessage
 			{
-				From = new MailAddress("\"Thabo Fletcher \"<thabo@braverobot.net>"),
+				//From = new MailAddress("\"Thabo Fletcher \"<thabo@braverobot.net>"),
+				From = new MailAddress("\"Thabo " + Environment.MachineName + "\"<thabo@" + Environment.MachineName.ToLower() + ".fpapp.net>"),
+				//From = new MailAddress("\"Thabo Fletcher \"<thabo@fpapp.net>"),
 				Subject = "Lazy rabbit test",
-				Body = "This is a test of the lazy rabbit notification system.",
+				Body = "Why is this working like half the time?",
 			};
 
 			// msg.To.Add(new MailAddress("thabo.fletcher@gmail.com"));

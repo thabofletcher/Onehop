@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Text;
 
 namespace LazyRabbit
@@ -12,6 +13,29 @@ namespace LazyRabbit
 		public MessageHostSenderException(MessageHostSender message)
 		{
 			_MessageSender = message;
+		}
+	}
+
+	public class HostRejectedException : MessageHostSenderException
+	{
+		SmtpStatusCode _StatusCode;
+
+		public HostRejectedException(SmtpStatusCode statusCode, MessageHostSender message) : base(message)
+		{
+			_StatusCode = statusCode;
+		}
+
+		public override string ToString()
+		{
+			return Message + Environment.NewLine + _MessageSender;
+		}
+
+		public override string Message
+		{
+			get
+			{
+				return String.Format("The mail host {0} rejected the message. The message will not be retried. Status code: {1}", _MessageSender.Host, _StatusCode);
+			}
 		}
 	}
 
@@ -61,7 +85,7 @@ namespace LazyRabbit
 		{
 			get
 			{
-				return String.Format("An attempt to send mail to {0} has failed for the last time. The system will no longer deliver the message. Current failure: {1}", _MessageSender.Host, _CurrentFailureMessage);
+				return String.Format("An attempt to send mail to {0} has failed permanently. Current failure: {1}", _MessageSender.Host, _CurrentFailureMessage);
 			}
 		}
 	}
@@ -85,7 +109,7 @@ namespace LazyRabbit
 		{
 			get
 			{
-				return String.Format("An attempt to send mail to {0} has failed. The system will try again at {1}. Current failure: {2}", _MessageSender.Host, _NextAttempt, _CurrentFailureMessage);
+				return String.Format("An attempt to send mail to {0} has failed temporarily. The system will try again at {1}. Current failure: {2}", _MessageSender.Host, _NextAttempt, _CurrentFailureMessage);
 			}
 		}
 	}

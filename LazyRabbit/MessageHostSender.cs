@@ -104,23 +104,45 @@ namespace LazyRabbit
         {
             try
             {
-                if (e.Error != null)
-                {
+				if (e.Error != null)
+				{
 					// dont retry if it is a recipient error (that way the valid recipients dont get a billion emails)
 					Type errorType = e.Error.GetType();
 					if (errorType == typeof(SmtpFailedRecipientException))
-						LogException(new FailedRecipientException((e.Error as SmtpFailedRecipientException).FailedRecipient, this));
-					else if (errorType == typeof(SmtpFailedRecipientsException))
-						LogException(new FailedRecipientException((e.Error as SmtpFailedRecipientsException).InnerExceptions.Select(x => x.FailedRecipient).Aggregate((current, next) => current + "," + next), this));
-					else
 					{
-						_IPIndex++;
-						if (_IPIndex < _EndPointIPs.Count)
-							SendAsync();
-						else
-							FailedSend("Message failed to send after attempting all mail exchanges.", e.Error.ToString());
+						LogException(new FailedRecipientException((e.Error as SmtpFailedRecipientException).FailedRecipient, this));
+						return;
 					}
-                }
+					if (errorType == typeof(SmtpFailedRecipientsException))
+					{
+						LogException(new FailedRecipientException((e.Error as SmtpFailedRecipientsException).InnerExceptions.Select(x => x.FailedRecipient).Aggregate((current, next) => current + "," + next), this));
+						return;
+					}
+					if (errorType == typeof(SmtpException))
+					{
+						SmtpStatusCode code = (e.Error as SmtpException).StatusCode;
+						switch (code)
+						{
+							case SmtpStatusCode.SyntaxError: // 500
+							case SmtpStatusCode.CommandUnrecognized: // 501?
+							case SmtpStatusCode.CommandNotImplemented: //502
+							case SmtpStatusCode.BadCommandSequence: //503
+							case SmtpStatusCode.CommandParameterNotImplemented: //504							
+							//case SmtpStatusCode.MailboxUnavailable: //550 
+							case SmtpStatusCode.MailboxNameNotAllowed: //553
+							case SmtpStatusCode.TransactionFailed: //554
+							case SmtpStatusCode.MustIssueStartTlsFirst:
+								LogException(new HostRejectedException(code, this));
+								return;
+						}
+					}
+
+					_IPIndex++;
+					if (_IPIndex < _EndPointIPs.Count)
+						SendAsync();
+					else
+						FailedSend("Message failed to send after attempting all mail exchanges.", e.Error.ToString());
+				}
             }
             catch (Exception exc)
             {
