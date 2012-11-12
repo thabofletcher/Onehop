@@ -78,14 +78,14 @@ namespace LazyRabbit
 
 		public override string ToString()
 		{
-			return Message + Environment.NewLine + _MessageSender + Environment.NewLine + "Send Attempts: " + Environment.NewLine + _SendAttempts.Select(x => x.ToString()).Aggregate((i, j) => i + Environment.NewLine + j) + Environment.NewLine + _CurrentFailureDetails;
+			return Message + Environment.NewLine + "Send Attempts: " + Environment.NewLine + _SendAttempts.Select(x => x.ToString()).Aggregate((i, j) => i + Environment.NewLine + j) + Environment.NewLine + _CurrentFailureDetails;
 		}
 
 		public override string Message
 		{
 			get
 			{
-				return String.Format("An attempt to send mail to {0} has failed permanently. Current failure: {1}", _MessageSender.Host, _CurrentFailureMessage);
+				return String.Format("An attempt to send mail has failed permanently.{0}{1}{0}Current failure: {2}{0}{3}", Environment.NewLine, _MessageSender, _CurrentFailureMessage, _CurrentFailureDetails);
 			}
 		}
 	}
@@ -102,14 +102,14 @@ namespace LazyRabbit
 
 		public override string ToString()
 		{
-			return Message + Environment.NewLine + _MessageSender + Environment.NewLine + "First Attempt: " + _SendAttempts.FirstOrDefault() + Environment.NewLine + "Last Attempt: " + _SendAttempts.LastOrDefault() + Environment.NewLine + "Total Attempts: " + _SendAttempts.Count + Environment.NewLine + _CurrentFailureDetails;
+			return Message + Environment.NewLine + "First Attempt: " + _SendAttempts.FirstOrDefault() + Environment.NewLine + "Last Attempt: " + _SendAttempts.LastOrDefault() + Environment.NewLine + "Total Attempts: " + _SendAttempts.Count + Environment.NewLine + _CurrentFailureDetails;
 		}
 
 		public override string Message
 		{
 			get
 			{
-				return String.Format("An attempt to send mail to {0} has failed temporarily. The system will try again at {1}. Current failure: {2}", _MessageSender.Host, _NextAttempt, _CurrentFailureMessage);
+                return String.Format("An attempt to send mail has failed temporarily. The system will try again at {1}.{0}{2}{0}Current failure: {3}{0}{4}", Environment.NewLine, _NextAttempt, _MessageSender, _CurrentFailureMessage, _CurrentFailureDetails);
 			}
 		}
 	}
