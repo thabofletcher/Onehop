@@ -117,8 +117,8 @@ namespace LazyRabbit
             _Run = false;
             try
             {
-                if (_RunThread != null && _RunThread.IsAlive)
-                    _RunThread.Join(5000);
+				if (_RunThread != null && _RunThread.IsAlive && !_RunThread.Join(5000))
+                    _RunThread.Abort();
             }
             catch { }
         }
