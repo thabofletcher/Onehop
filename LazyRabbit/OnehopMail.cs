@@ -15,7 +15,7 @@ namespace LazyRabbit
     {
         RetryQueue _RetryQueue = new RetryQueue();
 
-        public void Send(MailMessage message, Action<Exception> callbackException = null)
+        public void Send(MailMessage message, Action<Exception> callbackException = null, Action<MessageHostSender> sendCallback = null)
         {
 			Dictionary<string, MailMessage> hosts = new Dictionary<string,MailMessage>();
             foreach (var to in message.To)
@@ -35,7 +35,7 @@ namespace LazyRabbit
 
             foreach (var unique in hosts)
 			{
-				new MessageHostSender(unique.Value, unique.Key, callbackException, retryQ: _RetryQueue).TrySend();
+				new MessageHostSender(unique.Value, unique.Key, callbackException, retryQ: _RetryQueue, sendSuccess: sendCallback).TrySend();
 			}
         }
 

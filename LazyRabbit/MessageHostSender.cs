@@ -19,13 +19,15 @@ namespace LazyRabbit
         string _Host;
         IPAddress _DNSServer;
         RetryQueue _RetryQueue;
+        Action<MessageHostSender> _SendSuccess;
 
-        public MessageHostSender(MailMessage message, string host, Action<Exception> callbackException = null, RetryQueue retryQ = null)
+        public MessageHostSender(MailMessage message, string host, Action<Exception> callbackException = null, RetryQueue retryQ = null, Action<MessageHostSender> sendSuccess = null)
         {
             _Message = message;
             _RetryQueue = retryQ;
             _ExceptionLogger = callbackException;
             _Host = host;
+            _SendSuccess = sendSuccess;
         }
 
 		public void TrySend()
@@ -143,6 +145,8 @@ namespace LazyRabbit
 					else
 						FailedSend("Message failed to send after attempting all mail exchanges.", e.Error.ToString());
 				}
+                else if (_SendSuccess != null)
+                    _SendSuccess(this);
             }
             catch (Exception exc)
             {
@@ -164,7 +168,7 @@ namespace LazyRabbit
 				"Subject: " + _Message.Subject + Environment.NewLine +
 				"Message: " + _Message.Body + Environment.NewLine +
 				"Using DNS Server: " + _DNSServer + Environment.NewLine +
-				"Last Tried MX IPs: " + (_EndPointIPs == null ? "" : _EndPointIPs.Aggregate((current, next) => current + "," + next)) + Environment.NewLine;
+				"Last Tried MX IPs: " + ((_EndPointIPs == null || _EndPointIPs.Count == 0) ? "" : _EndPointIPs.Aggregate((current, next) => current + "," + next)) + Environment.NewLine;
 		}
     }
 }
