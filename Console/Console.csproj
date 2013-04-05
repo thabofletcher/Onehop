@@ -49,6 +49,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\lessstrictdns\DNS\Bdev.Net.Dns\Bdev.Net.Dns.csproj">
+      <Project>{cd856373-d7cd-46f2-bfd7-7ed056b5a635}</Project>
+      <Name>Bdev.Net.Dns</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LazyRabbit\LazyRabbit.csproj">
       <Project>{b551d0b3-60bc-4c61-ac23-bcd6f25f6174}</Project>
       <Name>LazyRabbit</Name>

@@ -40,26 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bdev.Net.Dns\ANameRecord.cs" />
-    <Compile Include="Bdev.Net.Dns\Enums.cs" />
-    <Compile Include="Bdev.Net.Dns\InvalidResponseException.cs" />
-    <Compile Include="Bdev.Net.Dns\MXRecord.cs" />
-    <Compile Include="Bdev.Net.Dns\NoResponseException.cs" />
-    <Compile Include="Bdev.Net.Dns\NSRecord.cs" />
-    <Compile Include="Bdev.Net.Dns\Pointer.cs" />
-    <Compile Include="Bdev.Net.Dns\Question.cs" />
-    <Compile Include="Bdev.Net.Dns\RecordBase.cs" />
-    <Compile Include="Bdev.Net.Dns\Request.cs" />
-    <Compile Include="Bdev.Net.Dns\Resolver.cs" />
-    <Compile Include="Bdev.Net.Dns\ResourceRecord.cs" />
-    <Compile Include="Bdev.Net.Dns\Response.cs" />
-    <Compile Include="Bdev.Net.Dns\SoaRecord.cs" />
     <Compile Include="DefaultDns.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="OnehopMail.cs" />
     <Compile Include="MessageHostSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RetryQueue.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\lessstrictdns\DNS\Bdev.Net.Dns\Bdev.Net.Dns.csproj">
+      <Project>{cd856373-d7cd-46f2-bfd7-7ed056b5a635}</Project>
+      <Name>Bdev.Net.Dns</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
