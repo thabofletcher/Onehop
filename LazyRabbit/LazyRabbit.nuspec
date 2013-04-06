@@ -14,4 +14,7 @@
     <copyright>Copyright 2013</copyright>
     <tags>SMTP Email</tags>
   </metadata>
+  <files>
+    <file src="bin\Release\*.dll" target="lib\net40" />
+  </files>
 </package>

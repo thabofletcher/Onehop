@@ -15,8 +15,8 @@ namespace TestConsole
         static void Main(string[] args)
         {
             //TestToString();
-            //TestDNS();
-			TestMailing();
+            TestDNS();
+			//TestMailing();
 
 			//MXLoadTest();
 
@@ -65,7 +65,7 @@ namespace TestConsole
                 Console.WriteLine("MXs according to your nameserver " + dnsServer.ToString() + " :");
                 try
                 {
-                    PrintMXs("gmailzzzzzzzzzzzzzzzzzzzzz.com", dnsServer);
+                    PrintMXs("ph.wi-tribe.com", dnsServer);
                 }
                 catch (Exception exc)
                 {
@@ -75,7 +75,7 @@ namespace TestConsole
 
             Console.WriteLine("MXs according to Google:");
             dnsServer = IPAddress.Parse("8.8.8.8");
-            PrintMXs("gmail.com", dnsServer);
+            PrintMXs("ph.wi-tribe.com", dnsServer);
         }
 
         private static void PrintMXs(string host, IPAddress dnsServer)
@@ -111,12 +111,12 @@ namespace TestConsole
 				Body = "Why is this working like half the time?",
 			};
 
-			// msg.To.Add(new MailAddress("thabo.fletcher@gmail.com"));
+			msg.To.Add(new MailAddress("thabo.fletcher@gmail.com"));
 			// msg.To.Add(new MailAddress("youdontexistforsure@gmail.com"));
 			//msg.To.Add(new MailAddress("neitherdoyouyouinsensitivecad@gmail.com"));
 			//msg.To.Add(new MailAddress("johnstewie@rocketmail.com"));
 			//msg.To.Add(new MailAddress("sakdfjlksajfdlksjadf@rocketmail.com"));
-			msg.To.Add(new MailAddress("thabo@epi.com.mx"));
+			//msg.To.Add(new MailAddress("thabo@epi.com.mx"));
 
 			return msg;
 		}
