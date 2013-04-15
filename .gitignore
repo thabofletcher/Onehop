@@ -4,3 +4,5 @@ Console/obj/*
 LazyRabbit/bin/*
 LazyRabbit/obj/*
 LazyRabbit.v11.suo
+/LazyRabbit/*.user
+/LazyRabbit/NuGet.exe
