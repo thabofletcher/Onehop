@@ -78,14 +78,22 @@ namespace LazyRabbit
 
 		public override string ToString()
 		{
-			return Message + Environment.NewLine + "Send Attempts: " + Environment.NewLine + _SendAttempts.Select(x => x.ToString()).Aggregate((i, j) => i + Environment.NewLine + j) + Environment.NewLine + _CurrentFailureDetails;
+			return ExceptionDescription + Environment.NewLine + "Send Attempts: " + Environment.NewLine + _SendAttempts.Select(x => x.ToString()).Aggregate((i, j) => i + Environment.NewLine + j) + Environment.NewLine + _CurrentFailureDetails;
 		}
 
 		public override string Message
 		{
 			get
 			{
-				return String.Format("An attempt to send mail has failed permanently.{0}{1}{0}Current failure: {2}{0}{3}", Environment.NewLine, _MessageSender, _CurrentFailureMessage, _CurrentFailureDetails);
+				return String.Format("An attempt to send mail has failed permanently.{0}{1}{0}", Environment.NewLine, _MessageSender.MessageDetails);
+			}
+		}
+
+		protected string ExceptionDescription
+		{
+			get
+			{
+				return String.Format("{0}: {1}{2}{3}", GetType().ToString(), _CurrentFailureMessage,  _CurrentFailureDetails.Length > 0 ? Environment.NewLine : "", _CurrentFailureDetails);
 			}
 		}
 	}
@@ -102,14 +110,14 @@ namespace LazyRabbit
 
 		public override string ToString()
 		{
-			return Message + Environment.NewLine + "First Attempt: " + _SendAttempts.FirstOrDefault() + Environment.NewLine + "Last Attempt: " + _SendAttempts.LastOrDefault() + Environment.NewLine + "Total Attempts: " + _SendAttempts.Count + Environment.NewLine + _CurrentFailureDetails;
+			return ExceptionDescription + Environment.NewLine + "First Attempt: " + _SendAttempts.FirstOrDefault() + Environment.NewLine + "Last Attempt: " + _SendAttempts.LastOrDefault() + Environment.NewLine + "Total Attempts: " + _SendAttempts.Count + Environment.NewLine + _CurrentFailureDetails;
 		}
 
 		public override string Message
 		{
 			get
 			{
-                return String.Format("An attempt to send mail has failed temporarily. The system will try again at {1}.{0}{2}{0}Current failure: {3}{0}{4}", Environment.NewLine, _NextAttempt, _MessageSender, _CurrentFailureMessage, _CurrentFailureDetails);
+				return String.Format("An attempt to send mail has failed temporarily. The system will try again at {1}.{0}{2}{0}", Environment.NewLine, _NextAttempt, _MessageSender.MessageDetails);
 			}
 		}
 	}

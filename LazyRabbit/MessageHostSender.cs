@@ -162,13 +162,28 @@ namespace LazyRabbit
             }
         }
 
+		public string MessageDetails
+		{
+			get
+			{
+				return "Bcc To: " + _Message.Bcc.ToString() + Environment.NewLine +
+				"Subject: " + _Message.Subject + Environment.NewLine +
+				"Message: " + _Message.Body;
+			}
+		}
+
+		public string LastTriedMessage
+		{
+			get
+			{
+				return "Using DNS Server: " + _DNSServer + Environment.NewLine +
+					"Last Tried MX IPs: " + ((_EndPointIPs == null || _EndPointIPs.Count == 0) ? "" : _EndPointIPs.Aggregate((current, next) => current + "," + next));
+			}
+		}
+
 		public override string ToString()
 		{
-			return "Bcc To: " + _Message.Bcc.ToString() + Environment.NewLine +
-				"Subject: " + _Message.Subject + Environment.NewLine +
-				"Message: " + _Message.Body + Environment.NewLine +
-				"Using DNS Server: " + _DNSServer + Environment.NewLine +
-				"Last Tried MX IPs: " + ((_EndPointIPs == null || _EndPointIPs.Count == 0) ? "" : _EndPointIPs.Aggregate((current, next) => current + "," + next)) + Environment.NewLine;
+			return MessageDetails + Environment.NewLine + LastTriedMessage + Environment.NewLine;
 		}
     }
 }
