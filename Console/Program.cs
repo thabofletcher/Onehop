@@ -45,7 +45,11 @@ namespace TestConsole
 		{
 			var msg = TestMail();
 
-			var ka = new OnehopMail();
+            // If you are sending emails that require security, in production you would need to install the server certificate as a trusted cert.
+            // If you are developing, you can just ignore any validation checks with the line below.  This is basically saying, I allow any cert.
+            // Again, NOT RECOMMENDED IN PRODUCTION
+            System.Net.ServicePointManager.ServerCertificateValidationCallback += (s, cert, chain, sslPolicyErrors) => true;
+            var ka = new OnehopMail(true);
 			ka.Send(msg, exc => { Console.WriteLine(exc.Message);  Console.WriteLine(exc.ToString()); });
 
 			Console.Read();
@@ -111,14 +115,14 @@ namespace TestConsole
 				Body = "Why is this working like half the time?",
 			};
 
-			msg.To.Add(new MailAddress("thabo.fletcher@gmail.com"));
-			// msg.To.Add(new MailAddress("youdontexistforsure@gmail.com"));
-			//msg.To.Add(new MailAddress("neitherdoyouyouinsensitivecad@gmail.com"));
-			//msg.To.Add(new MailAddress("johnstewie@rocketmail.com"));
-			//msg.To.Add(new MailAddress("sakdfjlksajfdlksjadf@rocketmail.com"));
-			//msg.To.Add(new MailAddress("thabo@epi.com.mx"));
+            msg.To.Add(new MailAddress("thabo.fletcher@gmail.com"));
+            // msg.To.Add(new MailAddress("youdontexistforsure@gmail.com"));
+            //msg.To.Add(new MailAddress("neitherdoyouyouinsensitivecad@gmail.com"));
+            //msg.To.Add(new MailAddress("johnstewie@rocketmail.com"));
+            //msg.To.Add(new MailAddress("sakdfjlksajfdlksjadf@rocketmail.com"));
+            //msg.To.Add(new MailAddress("thabo@epi.com.mx"));
 
-			return msg;
+            return msg;
 		}
     }
 }
