@@ -89,18 +89,9 @@ namespace LazyRabbit
         {
             if (_IPIndex < _EndPointIPs.Count)
             {
-                if (_Secure)
-                {
-                    _Client = new SmtpClient(_EndPointIPs[_IPIndex]);
-                    _Client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                    _Client.EnableSsl = _Secure;
-                }
-                else
-                {
-                    _Client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                    _Client = new SmtpClient(_EndPointIPs[_IPIndex]);
-                }
-                   
+                _Client = new SmtpClient(_EndPointIPs[_IPIndex]);
+                _Client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                _Client.EnableSsl = _Secure;
                 _Client.SendCompleted += new SendCompletedEventHandler(_SendCompleted);
                 _Client.SendAsync(_Message, this);
             }
