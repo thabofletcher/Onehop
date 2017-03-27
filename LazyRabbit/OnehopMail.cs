@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +14,19 @@ namespace LazyRabbit
 {
     public class OnehopMail
     {
-        RetryQueue _RetryQueue = new RetryQueue();
+        private RetryQueue _RetryQueue = new RetryQueue();
+        private bool _Secure = false;
+
+        public OnehopMail() { }
+
+        /// <summary>
+        /// Secure connection to the mail server
+        /// </summary>
+        /// <param name="secure">Use StartTLS command when connecting to the SMTP server</param>
+        public OnehopMail(bool secure)
+        {
+            _Secure = secure;
+        }
 
         public void Send(MailMessage message, Action<Exception> callbackException = null, Action<MessageHostSender> sendCallback = null)
         {
@@ -35,7 +48,7 @@ namespace LazyRabbit
 
             foreach (var unique in hosts)
 			{
-				new MessageHostSender(unique.Value, unique.Key, callbackException, retryQ: _RetryQueue, sendSuccess: sendCallback).TrySend();
+				new MessageHostSender(unique.Value, unique.Key, callbackException, retryQ: _RetryQueue, sendSuccess: sendCallback, secure: _Secure).TrySend();
 			}
         }
 
